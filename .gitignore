@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ignore all files under local (local development)
+local/
+
+# `manim-skill` cache and session outputs
+.tts-cache/
+media/
+
+# macOS
+.DS_Store
