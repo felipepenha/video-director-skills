@@ -38,8 +38,8 @@ Kokoro, measures exact durations with ffprobe, concatenates to `voiceover.mp3`,
 and writes `timestamps.json`.
 
 ```bash
-python3 tts-generate.py --narration narration.txt                 # default voice af_heart
-python3 tts-generate.py --narration narration.txt --voice am_adam # another Kokoro voice
+python3 tts-generate.py --narration narration.txt                  # default voice am_michael
+python3 tts-generate.py --narration narration.txt --voice af_heart # another Kokoro voice
 ```
 
 `--narration` defaults to `narration.txt`; `--plan` remains a compatibility alias.

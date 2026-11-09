@@ -6,8 +6,8 @@ Reads the SubtitleSpec from narration.txt, synthesizes one MP3 per subtitle with
 Kokoro, measures exact durations with ffprobe, concatenates them into
 voiceover.mp3, and writes per-subtitle timings to timestamps.json.
 
-    python tts-generate.py --narration narration.txt            # default voice af_heart
-    python tts-generate.py --narration narration.txt --voice am_adam
+    python tts-generate.py --narration narration.txt            # default voice am_michael
+    python tts-generate.py --narration narration.txt --voice af_heart
     python tts-generate.py --narration narration.txt --bust 2   # drop one cached clip, then exit
 
 Per-line audio is cached in .tts-cache/, so re-runs only regenerate changed
@@ -27,7 +27,7 @@ import tempfile
 import time
 from pathlib import Path
 
-DEFAULT_VOICE = "af_heart"
+DEFAULT_VOICE = "am_michael"
 KOKORO_MODEL_ID = "hexgrad/Kokoro-82M"
 KOKORO_LANG_CODES = {"a", "b", "e", "f", "h", "i", "j", "p", "z"}
 CACHE_DIR = Path(".tts-cache")

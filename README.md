@@ -29,4 +29,5 @@ uv sync --project .agents/skills/manim-skill
 
 ## Usage Notes
 
-The `local/` subdirectory is configured to be ignored by git. Use this directory as a sandbox to place your project files, or ask the agent to create its own files there.
+- **Sandbox**: The `local/` subdirectory is configured to be ignored by git. Use this directory as a sandbox to place your project files, or ask the agent to create its own files there.
+- **Kokoro TTS Voices**: Browse and preview available Kokoro voices in the [Kokoro Voice Gallery](https://rewind.ai/voices/) (pass `--voice <name>` to `tts-generate.py`, default: `am_michael`).

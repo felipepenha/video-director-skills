@@ -25,7 +25,7 @@ SESSION_DIR = ${MANIM_SKILL_HOME:-~/.manim-skill}/<project-slug>/
 └── media/           # manim output
 ```
 
-`<project-slug>` is a short kebab-case topic name (append `-2`, `-3`, ... on collision). `SKILL_DIR` is the directory containing this `SKILL.md` (and `pyproject.toml`), and `TOOLS_DIR` is `<SKILL_DIR>/tools`. When the video is about the user's code or files, read those from their original location — only outputs go in `SESSION_DIR`.
+`<project-slug>` is a short kebab-case topic name (append `-2`, `-3`, ... on collision). `SKILL_DIR` is the directory containing this `SKILL.md` (and `pyproject.toml`), and `TOOLS_DIR` is `<SKILL_DIR>/tools`. When the video is about the user's code or files, read those from their original location — only outputs go in `SESSION_DIR`. If the user asks to store the final video inside their repository (for example, under `docs/assets/videos/`), copy both `video.mp4` and the reproducible generation source bundle (`script.py`, `narration.txt`, `timestamps.json`, `concat.txt`, and a `Makefile`) into a dedicated subfolder next to the video so the code that produced it stays documented and version-controlled.
 
 **Environment & Setup — run once at the very start**, then stay in `SESSION_DIR` for every phase so outputs land there; substitute `<SKILL_DIR>` and `<TOOLS_DIR>` in the commands below with their absolute paths (the tools are invoked in place, never copied). Use `uv run --project "<SKILL_DIR>"` to run `python` and `manim` commands if they are not already on `PATH` (run `uv sync --project "<SKILL_DIR>"` first if dependencies are not yet installed):
 
@@ -56,7 +56,7 @@ subtitles:
 python "<TOOLS_DIR>/tts-generate.py" --narration narration.txt
 ```
 
-Local Kokoro voice `af_heart` by default; `--voice <name>` (e.g. `am_adam`, `bf_emma`) for another. Unchanged lines are served from `.tts-cache/`.
+Local Kokoro voice `am_michael` (Michael, male American English) by default; `--voice <name>` (e.g. `af_heart`, `am_adam`, `bf_emma` — browse all voices at https://rewind.ai/voices/) for another. Unchanged lines are served from `.tts-cache/`.
 
 Produces `voiceover.mp3` and `timestamps.json`. The run prints how many clips it found — confirm it matches your narration line count (a mismatch means the block didn't parse; fix the format in `narration.txt`). **Read `timestamps.json` before writing code** — each `duration_s` is the exact time budget for that subtitle's segment.
 
@@ -72,6 +72,10 @@ Write `script.py`:
    Keep the pixel and frame aspect ratios matched.
 3. **Each narration line becomes exactly one `self.add_subcaption(text, duration=duration_s)` call — same text, same order** (a scene may hold several consecutive segments). Never burn subtitles in as text mobjects: `add_subcaption()` emits the per-scene `.srt` files the viewer uses; the linter simulates the calls in `script.py`. Inline each `duration_s` from `timestamps.json` as a literal, set explicit `run_time=` on every `play()`, keep total scheduled time (including `wait()` and `move_camera()`) within the budget, and end each segment with `self.wait(max(0, dur - used))`.
 4. **`MathTex(...)` for formulas; prefer `Tex(...)` over `Text(...)` for prose** (Pango can produce odd letter spacing).
+5. **Follow the 3Blue1Brown visual style (see `https://github.com/3b1b/videos/tree/master/_2024/transformers`) — never build a "slide deck" video**:
+   - **No slide-deck boxes**: Avoid stacking rounded-rectangle text cards or bullet-point slides. Every scene should center on live mathematical or mechanistic objects that transform on screen.
+   - **Canvas & Palette**: Use a pitch-black canvas (`config.background_color = "#000000"`) with high-contrast 3b1b colors (`BLUE_B`/`BLUE_C`, `TEAL_B`, `YELLOW`, `RED_B`, `GREEN_B`, `PURPLE_B`, and `GREY_B`/`GREY_D` for structure).
+   - **Neural Networks & Linear Algebra**: Represent weight matrices as explicit bracketed grids of colored squares (`BLUE` for positive, `RED` for negative, `BLACK` for zero), token embeddings as vertical bracketed column vectors, MLPs as bipartite layers of circular neurons (`Circle`) with weighted synaptic lines (`Line`) and animated activation pulses, residual streams as horizontal highways with $\oplus$ addition nodes, and subspace operations as geometric vectors and projections on a `NumberPlane`.
 
 ```python
 from manim import *
@@ -139,4 +143,4 @@ Then iterate:
 
 1. If voiceover lines changed: edit `narration.txt`, re-run Phase 2 (unchanged lines are cache hits; `python "<TOOLS_DIR>/tts-generate.py" --bust <index or text fragment>` force-regenerates one clip), and update `script.py` to the new `timestamps.json`.
 2. Fix the named scenes, lint when narrated, re-render **only the affected scenes**, re-mux.
-3. The viewer serves the new `video.mp4` on reload; restart it only if it was stopped.
+3. The viewer serves the new `video.mp4` on reload; restart `video_viewer.py` whenever scene durations (`timestamps.json`), voiceover clips, or `concat.txt` change so in-memory chapter markers and subtitle timings refresh.
